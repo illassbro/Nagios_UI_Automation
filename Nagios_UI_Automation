@@ -1,0 +1,595 @@
+
+[[ NAGIOS AUTOMATION VIA THE UI ]]
+
+After you follow the build sections (NAGIOS AUTOMATION: ENVIRONMENT SETUP/NAGIOS AUTOMATION: BUILD CODE) you can add and remove host via the CLI like so.
+
+[ ADD HOST ]
+sshpass -p '123456' ssh -o StrictHostKeyChecking=false root@scripthost1.k12.com
+sudo su - batman
+source /etc/skel/.bashrc
+
+#RUN 
+CODE=nagios_ui_add
+CLASSPATH='.:selenium-2.53.1/selenium-java-2.53.1.jar:phantomjsdriver-1.2.1.jar:jna-3.3.0.jar:jna-3.3.0-platform.jar:guava-19.0.jar:gson-2.3.1.jar:httpclient-4.5.jar:httpcore-4.4.1.jar:commons-io-2.4.jar:commons-exec-1.3.jar:commons-logging-1.2.jar:com.springsource.net.sf.cglib-2.2.0.jar'
+cd ~/NAGIOS_UI_AUTOMATION
+
+java -cp ${CLASSPATH} ${CODE} template newhost71 10.64.59.40
+java -cp ${CLASSPATH} ${CODE} template newhost72 10.64.59.41
+java -cp ${CLASSPATH} ${CODE} template newhost73 10.64.59.42
+
+
+## SEARCH FOR HOSTS (newhost*)
+http://Nagios_Server/nagiosxi/includes/components/xicore/status.php?show=services
+http://Nagios_Server/nagiosxi/includes/components/xicore/status.php?show=services&sortby=&sortorder=asc&host=&hostgroup=&servicegroup=&search=newhost&searchButton=Go
+
+
+[ SUBTRACT HOST ]
+sshpass -p '123456' ssh -o StrictHostKeyChecking=false root@scripthost1.k12.com
+sudo su - batman
+source /etc/skel/.bashrc
+
+#RUN
+CODE=nagios_ui_subtract
+CLASSPATH='.:selenium-2.53.1/selenium-java-2.53.1.jar:phantomjsdriver-1.2.1.jar:jna-3.3.0.jar:jna-3.3.0-platform.jar:guava-19.0.jar:gson-2.3.1.jar:httpclient-4.5.jar:httpcore-4.4.1.jar:commons-io-2.4.jar:commons-exec-1.3.jar:commons-logging-1.2.jar:com.springsource.net.sf.cglib-2.2.0.jar'
+cd ~/NAGIOS_UI_AUTOMATION
+
+java -cp ${CLASSPATH} ${CODE} newhost71
+java -cp ${CLASSPATH} ${CODE} newhost72
+java -cp ${CLASSPATH} ${CODE} newhost73
+
+## SEARCH FOR HOSTS (newhost7*)
+http://Nagios_Server/nagiosxi/includes/components/xicore/status.php?show=services
+http://Nagios_Server/nagiosxi/includes/components/xicore/status.php?show=services&sortby=&sortorder=asc&host=&hostgroup=&servicegroup=&search=newhost&searchButton=Go
+
+
+
+
+[[ KNOWN ERRORS ]]
+
+## NOTE: THIS WILL NOT RUN AS THE "ROOT" USER; YOU CAN INSTALL AS ROOT BUT NOT RUN THE AUTOMATION AS ROOT.
+https://chromedriver.chromium.org/security-considerations
+
+[root@scripthost1 NAGIOS_UI_AUTOMATION]# java -cp ${CLASSPATH} ${CODE} eqa-tc80 scripthost1 10.64.22.201
+templateName: eqa-tc80
+hostName: scripthost1
+IPADDR: 10.64.22.201
+STARTING DRIVER:
+Starting ChromeDriver 85.0.4183.87 (cd6713ebf92fa1cacc0f1a598df280093af0c5d7-refs/branch-heads/4183@{#1689}) on port 30967
+Only local connections are allowed.
+Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
+[1600962162.580][SEVERE]: CreatePlatformSocket() failed: Address family not supported by protocol (97)
+ChromeDriver was started successfully.
+Exception in thread "main" org.openqa.selenium.WebDriverException: unknown error: Chrome failed to start: exited abnormally.
+  (unknown error: DevToolsActivePort file doesn't exist)
+  (The process started from chrome location /usr/bin/google-chrome is no longer running, so ChromeDriver is assuming that Chrome has crashed.)
+  (Driver info: chromedriver=85.0.4183.87 (cd6713ebf92fa1cacc0f1a598df280093af0c5d7-refs/branch-heads/4183@{#1689}),platform=Linux 4.1.12-103.7.3.el7uek.x86_64 x86_64) (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 282 milliseconds
+Build info: version: '2.53.1', revision: 'a36b8b1', time: '2016-06-30 17:32:46'
+System info: host: 'scripthost1', ip: '10.64.20.201', os.name: 'Linux', os.arch: 'amd64', os.version: '4.1.12-103.7.3.el7uek.x86_64', java.version: '1.8.0_262'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+        at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+        at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+        at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+        at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+        at org.openqa.selenium.remote.ErrorHandler.createThrowable(ErrorHandler.java:206)
+        at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed(ErrorHandler.java:158)
+        at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:678)
+        at org.openqa.selenium.remote.RemoteWebDriver.startSession(RemoteWebDriver.java:249)
+        at org.openqa.selenium.remote.RemoteWebDriver.<init>(RemoteWebDriver.java:131)
+        at org.openqa.selenium.remote.RemoteWebDriver.<init>(RemoteWebDriver.java:144)
+        at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:170)
+        at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:159)
+        at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:148)
+        at nagios_ui_add.main(nagios_ui_add.java:50)
+[root@scripthost1 NAGIOS_UI_AUTOMATION]#
+
+
+
+[[ NAGIOS AUTOMATION: ENVIRONMENT SETUP ]]
+
+## NAGIOS: ADD SCRIPT UID
+##
+##
+
+http://Nagios_Server/nagiosxi/admin/users.php
+batman / 123456
+batman@localhost
+
+NOTE: You must login manually and accept the License Agreement
+
+
+
+## Install Java SDK
+## 
+## 
+
+sshpass -p '123456' ssh -o StrictHostKeyChecking=false root@scripthost1.k12.com
+sudo su - batman
+source /etc/skel/.bashrc
+
+## TOOLS
+sudo yum -y install git wget maven  
+sudo yum -y install sshpass
+
+## JAVA_SDK
+rpm -qa --queryformat "%-40{NAME} %20{VENDOR} %10{SIZE}\n" | grep -i ^java
+sudo yum -y whatprovides java\*jdk
+sudo yum -y install java-1.8.*-openjdk\* --exclude=java-1.8.*-openjdk-src\* 
+rpm -qa --queryformat "%-40{NAME} %20{VENDOR} %10{SIZE}\n" | grep -i ^java
+which javac
+javac -version
+
+
+## TEST JAVA
+java -version 
+echo 'public class HelloWorld { public static void main(String[] args) { System.out.println("Hello, World"); }}' > HelloWorld.java
+javac HelloWorld.java && java HelloWorld
+
+
+## INSTALL CHROME
+##
+##
+
+## MAKE SURE TO MATCH THE BINARY AND DRIVER!!!!
+https://www.google.com/linuxrepositories/
+https://chromium.googlesource.com/chromium/src/+/refs/heads/master/docs/linux/chromium_packages.md
+
+mkdir -p ~/NAGIOS_UI_AUTOMATION
+cd ~/NAGIOS_UI_AUTOMATION
+wget -O google-chrome.rpm https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+sudo yum -y install ./google-chrome.rpm
+sudo yum -y install gtk3-devel
+
+## GET CHROME VERSION
+google-chrome -version 
+chromium-browser -version 
+
+
+## GET (THE LATEST) CHROME DRIVER (webdriver)
+
+NOTE: Each Chrome exec has a corresponding driver web driver.
+http://chromedriver.chromium.org/downloads
+
+#    Current Releases:
+#    If you are using Chrome version 85, please download ChromeDriver 85.0.4183.38
+#    If you are using Chrome version 84, please download ChromeDriver 84.0.4147.30
+#    If you are using Chrome version 83, please download ChromeDriver 83.0.4103.39
+#    For older version of Chrome, please see below for the version of ChromeDriver that supports it.
+#
+
+https://chromedriver.storage.googleapis.com/index.html?path=84.0.4147.30/
+https://chromedriver.storage.googleapis.com/84.0.4147.30/chromedriver_linux64.zip
+
+## NOTE: Get the driver version from the website
+#VERSION=$(google-chrome -version | sed 's/ /#/g;s/#$//;s/.*#//')
+VERSION=84.0.4147.30    
+
+mkdir -p ~/NAGIOS_UI_AUTOMATION
+cd ~/NAGIOS_UI_AUTOMATION
+wget -O chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/${VERSION}/chromedriver_linux64.zip
+unzip chromedriver_linux64.zip
+find chromedriver_linux64
+file chromedriver
+ls
+
+
+
+## ERROR: DIRVER NEEDS TO MATCH THE EXEC
+## 
+## 
+
+EXAMPLE:  "This version of ChromeDriver only supports Chrome version 85"
+Starting ChromeDriver 85.0.4183.38 (9047dbc2c693f044042bbec5c91401c708c7c26a-refs/branch-heads/4183@{#779}) on port 12094
+Only local connections are allowed.
+Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
+ChromeDriver was started successfully.
+[1596831104.916][SEVERE]: CreatePlatformSocket() failed: Address family not supported by protocol (97)
+[1596831105.147][SEVERE]: CreatePlatformSocket() failed: Address family not supported by protocol (97)
+Exception in thread "main" org.openqa.selenium.SessionNotCreatedException: session not created: This version of ChromeDriver only supports Chrome version 85
+
+
+## Selenium + Deps
+##
+##
+
+mkdir -p ~/NAGIOS_UI_AUTOMATION
+cd ~/NAGIOS_UI_AUTOMATION
+wget --no-check-certificate 'https://selenium-release.storage.googleapis.com/2.53/selenium-java-2.53.1.zip'
+wget --no-check-certificate 'https://repo1.maven.org/maven2/org/seleniumhq/selenium/selenium-htmlunit-driver/2.52.0/selenium-htmlunit-driver-2.52.0.jar'
+#wget --no-check-certificate 'https://central.maven.org/maven2/com/codeborne/phantomjsdriver/1.2.1/phantomjsdriver-1.2.1.jar'
+wget --no-check-certificate 'https://repo1.maven.org/maven2/com/google/guava/guava/19.0/guava-19.0.jar'
+wget --no-check-certificate 'https://repo1.maven.org/maven2/com/google/code/gson/gson/2.3.1/gson-2.3.1.jar'
+wget --no-check-certificate 'https://repo1.maven.org/maven2/org/batman/commons/commons-exec/1.3/commons-exec-1.3.jar'
+wget --no-check-certificate 'https://repo1.maven.org/maven2/commons-io/commons-io/2.4/commons-io-2.4.jar'
+wget --no-check-certificate 'https://repo1.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar'
+wget --no-check-certificate 'https://repo1.maven.org/maven2/org/batman/httpcomponents/httpclient/4.5/httpclient-4.5.jar'
+wget --no-check-certificate 'https://repo1.maven.org/maven2/org/batman/httpcomponents/httpcore/4.4.1/httpcore-4.4.1.jar'
+wget --no-check-certificate 'https://repo1.maven.org/maven2/net/java/dev/jna/jna/3.3.0/jna-3.3.0.jar'
+wget --no-check-certificate 'https://repo1.maven.org/maven2/net/java/dev/jna/jna/3.3.0/jna-3.3.0-platform.jar'
+wget --no-check-certificate 'https://repository.springsource.com/ivy/bundles/external/net.sourceforge.cglib/com.springsource.net.sf.cglib/2.2.0/com.springsource.net.sf.cglib-2.2.0.jar'
+find ~/NAGIOS_UI_AUTOMATION
+	
+#UNZIP THIS
+mkdir -p ~/NAGIOS_UI_AUTOMATION
+cd ~/NAGIOS_UI_AUTOMATION
+jar -xvf selenium-java-2.53.1.zip 
+
+
+
+
+[[ NAGIOS AUTOMATION: BUILD CODE ]]
+
+## BUILD/RUN CODE: ADD HOST
+##
+##
+
+sshpass -p '123456' ssh -o StrictHostKeyChecking=false root@scripthost1.k12.com
+sudo su - batman
+source /etc/skel/.bashrc
+
+
+## ADD HOST
+## EDIT & BUILD
+mkdir -p ~/NAGIOS_UI_AUTOMATION
+cd ~/NAGIOS_UI_AUTOMATION
+CODE=nagios_ui_add
+CLASSPATH='.:selenium-2.53.1/selenium-java-2.53.1.jar:phantomjsdriver-1.2.1.jar:jna-3.3.0.jar:jna-3.3.0-platform.jar:guava-19.0.jar:gson-2.3.1.jar:httpclient-4.5.jar:httpcore-4.4.1.jar:commons-io-2.4.jar:commons-exec-1.3.jar:commons-logging-1.2.jar:com.springsource.net.sf.cglib-2.2.0.jar'
+vi ${CODE}.java && javac -cp ${CLASSPATH} ${CODE}.java
+
+#SEE: [ ADD ]
+#NOTE: In Code Section
+
+#RUN 
+CODE=nagios_ui_add
+CLASSPATH='.:selenium-2.53.1/selenium-java-2.53.1.jar:phantomjsdriver-1.2.1.jar:jna-3.3.0.jar:jna-3.3.0-platform.jar:guava-19.0.jar:gson-2.3.1.jar:httpclient-4.5.jar:httpcore-4.4.1.jar:commons-io-2.4.jar:commons-exec-1.3.jar:commons-logging-1.2.jar:com.springsource.net.sf.cglib-2.2.0.jar'
+cd ~/NAGIOS_UI_AUTOMATION
+
+java -cp ${CLASSPATH} ${CODE} template newhost71 10.64.59.40
+java -cp ${CLASSPATH} ${CODE} template newhost72 10.64.59.41
+java -cp ${CLASSPATH} ${CODE} template newhost73 10.64.59.42
+
+
+## SEARCH FOR HOSTS (newhost*)
+http://Nagios_Server/nagiosxi/includes/components/xicore/status.php?show=services
+http://Nagios_Server/nagiosxi/includes/components/xicore/status.php?show=services&sortby=&sortorder=asc&host=&hostgroup=&servicegroup=&search=newhost&searchButton=Go
+
+
+### Code Section: RAW Selenium
+### 
+### 
+
+[[ ADD ]]
+
+//nagios_ui_add.java
+import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.Iterator;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait; //WebDriverWait
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+//
+//CLASS
+public class nagios_ui_add {
+  public static void main(String[] args) {
+    if (args.length > 2 ){
+          System.out.println("templateName: "+ args[0]);
+          System.out.println("hostName: "+ args[1]);
+          System.out.println("IPADDR: "+ args[2]);
+     } else{
+        System.out.println("Usage: nagios_ui_add templateName hostName IPADDR");
+        System.exit(0);
+     }
+    //VARS
+    String URL = "http://Nagios_Server/nagiosxi/";
+    String UID = "batman";
+    String PASSWD = "123456";
+    String templateName = args[0];
+    String hostName = args[1];
+    String IPADDR = args[2];
+    //CHROME_DRIVER
+    System.out.println("STARTING DRIVER: ");
+    System.setProperty("webdriver.chrome.driver", "chromedriver");
+    ChromeOptions options = new ChromeOptions();
+    //USE_HEADLESS_MODE
+    options.addArguments("headless"); //Set Chrome Headless mode
+    //DISABLE SHARED MEM
+    options.addArguments("--disable-dev-shm-usage");
+    //SET SCREEN SIZE
+    //options.addArguments("window-size=1920x1080");
+    options.addArguments("window-size=800x600");
+    //options.addArguments("window-size=640x480");
+    //Private
+    options.addArguments("--incognito");
+    //SET CAPs (Chrome Does Not Use Capabilities )
+    //DesiredCapabilities capabilities = new DesiredCapabilities();
+    //capabilities.setCapability("autoDismissAlerts", true);
+    //capabilities.merge(options);
+    //options.merge(capabilities);
+    //Instantiate Web Driver
+    WebDriver driver = new ChromeDriver(options);
+    //RUN_TIME_START
+    long start = System.currentTimeMillis();
+    //SET TIMEOUT
+    driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+    //URL
+    System.out.println("CONNECTING TO URL");
+    driver.navigate().to(URL);
+    //PRINT_URL
+    String urls = driver.getCurrentUrl();
+    System.out.println("URL: " + urls);
+    //Wait
+    //WebElement DynamicElement = (new WebDriverWait(driver, 20)).until(ExpectedConditions.visibilityOfElementLocated(By.tagName("button")));
+
+    //LOGIN
+    driver.get("http://Nagios_Server/nagiosxi/login.php?redirect=/nagiosxi/index.php%3f&noauth=1");    
+    System.out.println("LOGIN: " + driver.getCurrentUrl());
+    driver.findElement(By.id("usernameBox")).clear();
+    driver.findElement(By.id("usernameBox")).sendKeys(UID);
+    driver.findElement(By.id("passwordBox")).clear();
+    driver.findElement(By.id("passwordBox")).sendKeys(PASSWD);
+    driver.findElement(By.id("loginButton")).click();
+    System.out.println("LOGIN: " + driver.getCurrentUrl());
+    //GOTO CONFIGMANAGER
+    driver.findElement(By.linkText("Configure")).click();
+    System.out.println("CONFIG: " + driver.getCurrentUrl());
+    driver.findElement(By.linkText("Core Config Manager")).click();
+    System.out.println("CONFIG: " + driver.getCurrentUrl());
+    driver.findElement(By.linkText("Hosts")).click();
+    System.out.println("CONFIG: " + driver.getCurrentUrl());
+    //COPY_TEMPLATE
+    // ERROR: Caught exception [ERROR: Unsupported command [selectFrame | index=0 | ]]
+    System.out.println("COPY: " + driver.getCurrentUrl());
+    //DEBUGGING_FIND_OBJECT
+    //ADD: WAIT FOR ELEMENT OR PAGE TO FULLY LOAD
+    //DEFAULT 
+    List<WebElement> elist = driver.findElements(By.xpath("//*[@type='text']"));
+    for (WebElement e : elist) {
+        System.out.println("value : " + e.getAttribute("id"));
+    }
+    List<WebElement> alist = driver.findElements(By.tagName("div"));
+    for (WebElement a : alist) {
+        System.out.println("value : " + a.getAttribute("id"));
+    }
+    //IFRAME
+    List<WebElement> elements = driver.findElements(By.tagName("iframe"));
+    for (WebElement iframe : elements) {
+            System.out.println("IFRAME ID : " + iframe.getAttribute("id"));
+            String frameName = iframe.getAttribute("id");
+            driver.switchTo().frame(frameName);
+            //
+        List<WebElement> iflist = driver.findElements(By.tagName("div"));
+        for (WebElement a : iflist) {
+            System.out.println(frameName + " (tagName) WebElement ID: " + a.getAttribute("id"));
+        }
+        List<WebElement> xflist = driver.findElements(By.xpath("//*[@type='text']"));
+        for (WebElement x : xflist) {
+            System.out.println(frameName + "(xpath) WebElement ID: " + x.getAttribute("id"));
+                   x.clear();
+                   x.sendKeys(templateName);
+                   x.submit();
+        }
+        //CLICK_COPY
+        driver.findElement(By.xpath("//img[@alt='Copy']")).click();
+        System.out.println("COPY: " + driver.getCurrentUrl());
+        //CONFIG_HOST
+        System.out.println("CONFIG_HOST: " + driver.getCurrentUrl());
+        driver.findElement(By.linkText(templateName+"_copy_1")).click();
+        driver.findElement(By.id("tfName")).click();
+        driver.findElement(By.id("tfName")).clear();
+        driver.findElement(By.id("tfName")).sendKeys(hostName);
+        driver.findElement(By.id("tfFriendly")).click();
+        driver.findElement(By.id("tfFriendly")).clear();
+        driver.findElement(By.id("tfFriendly")).sendKeys(hostName);
+        driver.findElement(By.id("tfAddress")).click();
+        driver.findElement(By.id("tfAddress")).clear();
+        driver.findElement(By.id("tfAddress")).sendKeys(IPADDR);
+        driver.findElement(By.id("chbActive")).click();
+        driver.findElement(By.id("subForm1")).click();
+        driver.findElement(By.linkText("Apply Configuration")).click();
+        System.out.println("CONFIG_HOST: " + driver.getCurrentUrl());
+    }
+    driver.switchTo().defaultContent();
+    //LOGOUT
+    System.out.println("LOGOUT: " + driver.getCurrentUrl());
+    driver.findElement(By.linkText("Logout")).click();
+    String logout = driver.getCurrentUrl();
+    System.out.println("URL: " + logout);
+
+    //CLEANUP
+    driver.quit(); //REMOVE DRIVER FROM MEM
+    //RUN_TIME_END
+    long finish = System.currentTimeMillis();
+    long timeElapsed = finish - start;
+    System.out.println("DONE!");
+    System.out.println("RUN_TIME (milliseconds): " + timeElapsed);
+    System.exit(0);
+   }
+}
+
+
+
+
+## BUILD/RUN CODE: SUBTRACT HOST
+## 
+## 
+
+mkdir -p ~/NAGIOS_UI_AUTOMATION
+cd ~/NAGIOS_UI_AUTOMATION
+CODE=nagios_ui_subtract
+CLASSPATH='.:selenium-2.53.1/selenium-java-2.53.1.jar:phantomjsdriver-1.2.1.jar:jna-3.3.0.jar:jna-3.3.0-platform.jar:guava-19.0.jar:gson-2.3.1.jar:httpclient-4.5.jar:httpcore-4.4.1.jar:commons-io-2.4.jar:commons-exec-1.3.jar:commons-logging-1.2.jar:com.springsource.net.sf.cglib-2.2.0.jar'
+vi ${CODE}.java  && javac -cp ${CLASSPATH} ${CODE}.java
+
+#SEE: [ SUBTRACT ]
+#NOTE: In Code Section
+
+#RUN
+CODE=nagios_ui_subtract
+CLASSPATH='.:selenium-2.53.1/selenium-java-2.53.1.jar:phantomjsdriver-1.2.1.jar:jna-3.3.0.jar:jna-3.3.0-platform.jar:guava-19.0.jar:gson-2.3.1.jar:httpclient-4.5.jar:httpcore-4.4.1.jar:commons-io-2.4.jar:commons-exec-1.3.jar:commons-logging-1.2.jar:com.springsource.net.sf.cglib-2.2.0.jar'
+cd ~/NAGIOS_UI_AUTOMATION
+
+java -cp ${CLASSPATH} ${CODE} newhost71
+java -cp ${CLASSPATH} ${CODE} newhost72
+java -cp ${CLASSPATH} ${CODE} newhost73
+
+## SEARCH FOR HOSTS (newhost*)
+http://Nagios_Server/nagiosxi/includes/components/xicore/status.php?show=services
+http://Nagios_Server/nagiosxi/includes/components/xicore/status.php?show=services&sortby=&sortorder=asc&host=&hostgroup=&servicegroup=&search=newhost&searchButton=Go
+
+
+### Code Section: RAW Selenium
+### 
+### 
+
+
+[[ SUBTRACT ]]
+
+//nagios_ui_subtract.java
+import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.Iterator;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait; //WebDriverWait
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.UnhandledAlertException;
+//
+//CLASS
+public class nagios_ui_subtract {
+  public static void main(String[] args) {
+    if (args.length > 0 ){
+          System.out.println("hostName: "+ args[0]);
+     } else{
+        System.out.println("Usage: nagios_ui_subtract hostName");
+        System.exit(0);
+     }
+    //VARS
+    String URL = "http://Nagios_Server/nagiosxi/";
+    String UID = "batman";
+    String PASSWD = "123456";
+    String hostName = args[0];
+    //CHROME_DRIVER
+    System.out.println("STARTING DRIVER: ");
+    System.setProperty("webdriver.chrome.driver", "chromedriver");
+    //SET OPTIONS
+    ChromeOptions options = new ChromeOptions();
+    //USE_HEADLESS_MODE
+    options.addArguments("headless"); //Set Chrome Headless mode
+    //DISABLE SHARED MEM
+    options.addArguments("--disable-dev-shm-usage");
+    //SET SCREEN SIZE
+    //options.addArguments("window-size=1920x1080");
+    options.addArguments("window-size=800x600");
+    //options.addArguments("window-size=640x480");
+    //Private
+    options.addArguments("--incognito");
+    //SET CAPs (Chrome Does Not Use Capabilities )
+    //DesiredCapabilities capabilities = new DesiredCapabilities();
+    //capabilities.setCapability("autoDismissAlerts", true);
+    //capabilities.merge(options);
+    //options.merge(capabilities);
+    //Instantiate Web Driver
+    WebDriver driver = new ChromeDriver(options);
+    //RUN_TIME_START
+    long start = System.currentTimeMillis();
+    //SET TIMEOUT
+    driver.manage().timeouts().implicitlyWait(10,TimeUnit.SECONDS);
+    //URL
+    System.out.println("CONNECTING TO URL");
+    driver.navigate().to(URL);
+    //PRINT_URL
+    String urls = driver.getCurrentUrl();
+    System.out.println("URL: " + urls);
+    //Wait
+    //WebElement DynamicElement = (new WebDriverWait(driver, 20)).until(ExpectedConditions.visibilityOfElementLocated(By.tagName("button")));
+    //LOGIN
+    driver.get("http://Nagios_Server/nagiosxi/login.php?redirect=/nagiosxi/index.php%3f&noauth=1");
+    System.out.println("LOGIN: " + driver.getCurrentUrl());
+    driver.findElement(By.id("usernameBox")).clear();
+    driver.findElement(By.id("usernameBox")).sendKeys(UID);
+    driver.findElement(By.id("passwordBox")).clear();
+    driver.findElement(By.id("passwordBox")).sendKeys(PASSWD);
+    driver.findElement(By.id("loginButton")).click();
+    System.out.println("LOGIN: " + driver.getCurrentUrl());
+    //GOTO CONFIGMANAGER
+    driver.findElement(By.linkText("Configure")).click();
+    System.out.println("CONFIG: " + driver.getCurrentUrl());
+    driver.findElement(By.linkText("Core Config Manager")).click();
+    System.out.println("CONFIG: " + driver.getCurrentUrl());
+    driver.findElement(By.linkText("Hosts")).click();
+    System.out.println("CONFIG: " + driver.getCurrentUrl());
+    //SEARCH
+    System.out.println("SEARCH: " + driver.getCurrentUrl());
+    //DEBUGGING_FIND_OBJECT
+    //ADD: WAIT FOR ELEMENT OR PAGE TO FULLY LOAD
+    //DEFAULT 
+    List<WebElement> elist = driver.findElements(By.xpath("//*[@type='text']"));
+    for (WebElement e : elist) {
+        System.out.println("value : " + e.getAttribute("id"));
+    }
+    List<WebElement> alist = driver.findElements(By.tagName("div"));
+    for (WebElement a : alist) {
+        System.out.println("value : " + a.getAttribute("id"));
+    }
+    //IFRAME
+    List<WebElement> elements = driver.findElements(By.tagName("iframe"));
+    for (WebElement iframe : elements) {
+        System.out.println("IFRAME ID : " + iframe.getAttribute("id"));
+        String frameName = iframe.getAttribute("id");
+        driver.switchTo().frame(frameName);
+            
+        List<WebElement> iflist = driver.findElements(By.tagName("div"));
+        for (WebElement a : iflist) {
+           System.out.println(frameName + " (tagName) WebElement ID: " + a.getAttribute("id"));
+        }
+        List<WebElement> xflist = driver.findElements(By.xpath("//*[@type='text']"));
+        for (WebElement x : xflist) {
+            System.out.println(frameName + "(xpath) WebElement ID: " + x.getAttribute("id"));
+                   x.clear();
+                   x.sendKeys(hostName);
+                   x.submit();
+        }
+        System.out.println("SEARCH: " + driver.getCurrentUrl());
+        //REMOVE HOST
+        System.out.println("REMOVE: " + driver.getCurrentUrl());
+        driver.findElement(By.name("checked[]")).click();
+        driver.findElement(By.xpath("//img[@alt='Delete']")).click(); //MUST DEAL WITH THE POP UP (immediately) after this click!!!
+        //POPUP ()
+        //System.out.println("POPUP: " + driver.getCurrentUrl());//ERROR: You an not do a nother driver action until you deal with pop up!!!
+        System.out.println("POPUP: ");
+        boolean done = false;
+        while (!done) {
+            try {
+                driver.switchTo().alert().accept();
+                done = true;
+           } catch (UnhandledAlertException e) {
+                System.out.println("try again");
+           }
+        }
+        System.out.println("POPUP: " + driver.getCurrentUrl());
+        System.out.println("REMOVE: " + driver.getCurrentUrl());
+        driver.findElement(By.linkText("Apply Configuration")).click();
+    }
+    driver.switchTo().defaultContent();
+    //LOGOUT
+    System.out.println("LOGOUT: " + driver.getCurrentUrl());
+    driver.findElement(By.linkText("Logout")).click();
+    String logout = driver.getCurrentUrl();
+    System.out.println("URL: " + logout);
+
+    //CLEANUP
+    driver.quit(); //REMOVE DRIVER FROM MEM
+    //RUN_TIME_END
+    long finish = System.currentTimeMillis();
+    long timeElapsed = finish - start;
+    System.out.println("DONE!");
+    System.out.println("RUN_TIME (milliseconds): " + timeElapsed);
+    System.exit(0);
+   } 
+}
+
+
